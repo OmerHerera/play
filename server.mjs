@@ -4,7 +4,7 @@ import { resolve, dirname } from 'node:path';
 import { existsSync, createReadStream, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'url';
 
-const PORT = 3131;
+const PORT = process.env.PORT || 3000;
 const SECURE_PORT = 8443;
 const hostname = '127.0.0.1';
 // const options = {

@@ -14,7 +14,7 @@ const hostname = '127.0.0.1';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const server = createServer(serverHandler);
-const secureServer = createSecureServer(options, serverHandler);
+// const secureServer = createSecureServer(options, serverHandler);
 const policies = {
   //configure Content Security Policy (CSP) directives to allow script execution from certain domains while blocking the use of eval()
   'block_eval': "script-src 'self' https://harmony.com:8080; script-src-elem 'self' https://harmony.com:8080; script-src-attr 'self' https://harmony.com:8080 'unsafe-inline'; object-src 'none'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests; default-src 'none'; manifest-src 'self'; font-src 'self'; connect-src 'self'",

@@ -7,10 +7,10 @@ import { fileURLToPath } from 'url';
 const PORT = 3131;
 const SECURE_PORT = 8443;
 const hostname = '127.0.0.1';
-const options = {
-  key: readFileSync('./certs/key.pem'),
-  cert: readFileSync('./certs/cert.pem')
-};
+// const options = {
+//   key: readFileSync('./certs/key.pem'),
+//   cert: readFileSync('./certs/cert.pem')
+// };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const server = createServer(serverHandler);

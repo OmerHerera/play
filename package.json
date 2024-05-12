@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.mjs",
   "scripts": {
+    "build": "echo \"No build need it\" && exit 0",
     "start": "node server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

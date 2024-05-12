@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://harmony.com:8080/server/script.js"></script>
-  <title>Demo</title>
+  <script src="{{placeholder}}"></script>
+  <title>😁 Demo - CSP 😁</title>
 </head>
   <h1>🌎🌏🌍Coming from the Server🌎🌏🌍</h1>
   <h3>Options in url params</h3>
   <p>
     <li>
-      file=allow_same_origin -> Tries to load script from the same domain
+      No QueryString -> Tries to load script from the same domain
     </li>
     <li>
       file=allow_other_origin -> Tries to load script from different domain
+      example: http://dy.omer.com:3000/?policy=allow_other_origin&script=https://omerherera.github.io/cdn/src/script.js
     </li>
     <li>
       policy=block_eval -> Allow script execution from certain domains while blocking the use of eval(      
@@ -25,10 +26,9 @@
       policy=allow_same_origin_blocking_eval -> Allow script execution from same domain while blocking the use of eval()  
     </li>
     <li>
-      policy=allow_other_origin -> Allow script execution from different domain + the use of eval()  
+      policy=allow_other_origin&script=https://omerherera.github.io/cdn/src/script.js -> Allow script execution from different domain + the use of eval()  
     </li>
   </p>
-  
   </body>
 </body>
 </html>

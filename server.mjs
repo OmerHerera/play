@@ -44,7 +44,7 @@ function serverHandler(req, res) {
       const url = new URL(req.url, `http://${req.headers.host}`);
       const queryParams = new URLSearchParams(url.search);
       const policyFromQuery = queryParams.get('policy');
-      const scriptPathFromQuery = queryParams.get('script') || 'https://dy.omer.com:8443/script.js';
+      const scriptPathFromQuery = queryParams.get('script') || '/script.js';
       const domainAllow = getDomainFromPath(scriptPathFromQuery);
       const policy = getPolicy(policyFromQuery, domainAllow);
 

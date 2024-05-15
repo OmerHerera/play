@@ -3,9 +3,10 @@ import { createServer as createSecureServer } from 'node:https';
 import { resolve, dirname } from 'node:path';
 import { existsSync, createReadStream, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'url';
+import { getDomainFromPath, getPolicy } from './functions.mjs'
 
 const PORT = process.env.PORT || 3000;
-const SECURE_PORT = 8443;
+const SECURE_PORT = process.env.SECURE_PORT || 8443;
 const hostname = '127.0.0.1';
 const options = {
   key: readFileSync('./certs/key.pem'),
@@ -15,31 +16,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const server = createServer(serverHandler);
 const secureServer = createSecureServer(options, serverHandler);
-const policies = {
-  //configure Content Security Policy (CSP) directives to allow script execution from certain domains while blocking the use of eval()
-  'block_eval': "script-src 'self' {{allowDomain}}; script-src-elem 'self' {{allowDomain}}; script-src-attr 'self' {{allowDomain}} 'unsafe-inline'; object-src 'none'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests; default-src 'none'; manifest-src 'self'; font-src 'self'; connect-src 'self'",
-  'allow_same_origin': "default-src 'self' 'unsafe-eval'",
-  'allow_same_origin_blocking_eval': "script-src 'self'; script-src-elem 'self'; script-src-attr 'self' 'unsafe-inline'; object-src 'none'; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; block-all-mixed-content; upgrade-insecure-requests; default-src 'none'; manifest-src 'self'; font-src 'self'; connect-src 'self'",
-  'allow_other_origin': "script-src-elem {{allowDomain}}",
-};
-function getDomainFromPath(script) {
-  // const url = 'https://omerherera.github.io/cdn/src/script.js';
-  const regex = /^(https?:\/\/[^/]+)(?:\/|$)/;
-  const match = script.match(regex);
-  const path = match ? match[1] : null;
-  return path; // Output: https://omerherera.github.io
-}
-function getPolicy(policyFromQuery, domainAllow) {
-  // if no policy passed on the request allow all
-  const policy = (policyFromQuery && policies[policyFromQuery]) ?
-    policies[policyFromQuery].replaceAll('{{allowDomain}}', domainAllow) :
-    '';
-  return policy;
-}
+
+
 
 function serverHandler(req, res) {
   if (req.method === 'GET' && req.url.startsWith('/')) {
-    if (req.url === '/' || req.url.includes('policy=') || req.url.includes('script=')) {
+      // ^ asserts the start of the string.
+      // \/$ matches exactly one forward slash (/) at the end of the string. The backslash \ is used to escape the forward slash /, and $ asserts the end of the string. Together, \/$ matches only the root path /.
+      // | is the alternation operator, meaning "or."
+      // policy= matches the string "policy=" anywhere in the URL.
+      // script= matches the string "script=" anywhere in the URL.
+    if (/^\/$|policy=|script=/.test(req.url)) {
       // Extracting query parameters
       const url = new URL(req.url, `http://${req.headers.host}`);
       const queryParams = new URLSearchParams(url.search);
@@ -48,7 +35,7 @@ function serverHandler(req, res) {
       const domainAllow = getDomainFromPath(scriptPathFromQuery);
       const policy = getPolicy(policyFromQuery, domainAllow);
 
-      let filePath = resolve(__dirname, 'public/index.html');
+      let filePath = resolve(__dirname, './../public/index.html');
       let fileExists = existsSync(filePath);
       if (!fileExists) {
         res.statusCode = 404;
@@ -75,7 +62,6 @@ function serverHandler(req, res) {
             
             // Set response headers
           res.statusCode = 200;
-          console.log('policy', { policy })
             res.setHeader('Content-Type', 'text/html');
             policy && res.setHeader('Content-Security-Policy', policy);
             
@@ -89,7 +75,7 @@ function serverHandler(req, res) {
       }
     }
     else if (req.url === '/script.js') {
-      let filePath = resolve(__dirname, 'public/script.js');
+      let filePath = resolve(__dirname, './../public/script.js');
       res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
       createReadStream(filePath).pipe(res);
     }

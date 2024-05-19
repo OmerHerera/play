@@ -57,16 +57,36 @@ function serverHandler(req, res) {
         });
 
         fileStream.on('end', () => {
-            // Perform placeholder replacements
-            htmlContent = htmlContent.replace('{{placeholder}}', scriptPathFromQuery);
+          // Perform placeholder replacements
+          htmlContent = htmlContent.replace('{{placeholder}}', scriptPathFromQuery);
             
-            // Set response headers
+          // Set response headers
           res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            policy && res.setHeader('Content-Security-Policy', policy);
+          res.setHeader('Content-Type', 'text/html');
+          policy && res.setHeader('Content-Security-Policy', policy);
+          // ************************************************************************************************************************
+          // Set a cookie with name 'myCookie' and value 'cookieValue'
+          // The HttpOnly attribute is a flag that can be set on an HTTP cookie.
+          // When this attribute is set, the cookie cannot be accessed via JavaScript.
+          // It is only sent to the server with HTTP requests and is not accessible through client - side scripts(such as JavaScript).
+          // res.setHeader('Set-Cookie', 'myCookie=cookieValue; HttpOnly');
+          // ************************************************************************************************************************
+          res.setHeader('Set-Cookie', 'myCookie=cookieValue;');
+          // You can also set additional cookie attributes like expiry and path
+          // Example:
+          // res.setHeader('Set-Cookie', 'myCookie=cookieValue; Max-Age=3600; Path=/; HttpOnly');
+          // ************************************************************************************************************************
+          // To allow sharing cookies across different subdomains or domains, you can set the cookie with a Domain attribute.
+          /// With the Domain attribute set to ".domain.com", the cookie will be accessible to scripts running on all subdomains of "domain.com", including "another.domain.com". 
+          // For example:
+          // res.setHeader('Set-Cookie', 'myCookie=cookieValue; Domain=.domain.com; Path=/');
+          // ************************************************************************************************************************
+
+
+     
             
-            // Send the modified HTML content as the response
-            res.end(htmlContent);
+          // Send the modified HTML content as the response
+          res.end(htmlContent);
         });
 
         fileStream.on('error', (err) => {
